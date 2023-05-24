@@ -10,6 +10,9 @@ app.set("view engine", "hbs");
 app.set("views","./view")
 app.use(express.static(__dirname + "/public"))
 
+
+// app.use(express.urlencoded());
+// app.use(express.json());
 //Routing
 app.get("/",(req, res) => {
     res.render('index')
@@ -65,6 +68,25 @@ app.get('/addstudent', (req, res) => {
     })
 });
 
+
+app.get("/searchstudent", (req,res)=> {
+    //fetch data from form
+    const {id} = req.query;
+
+    let qry = "select * from emp_details where emp_id=?";
+    mysql.query(qry, [id], (err, results) => {
+        if(err){
+            throw err;
+        } else{
+            if(results.length > 0){
+    
+                res.render("search", {mesg1:true, mesg2: false});
+            }else{
+                res.render("search", {mesg1:false, mesg2: true});
+            }
+        }
+    });
+});
 
 //Server
 app.listen(port,(err)=>{
