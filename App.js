@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+
+const mysql = require("./connection").con
 //configuration
 
 
 app.set("view engine", "hbs");
 app.set("views","./view")
+app.use(express.static(__dirname + "/public"))
 
 //Routing
 app.get("/",(req, res) => {
@@ -29,6 +32,37 @@ app.get("/delete",(req, res) => {
 
 app.get("/view",(req, res) => {
     res.render('view')
+});
+
+
+
+app.get('/addstudent', (req, res) => {
+    //fetching data
+    const {id, name, email, role, address, city} = req.query;
+
+    //sanitization XSS...
+    let qry = "select * from emp_details where emp_id=? or emp_email=?";
+    mysql.query(qry, [id, email], (err, results) => {
+        
+        if(err){
+            throw err
+        }
+        else{
+            if(results.length > 0){
+                res.render("add", {checkmsg: true})
+
+            } else {
+                //insert query
+                let qry2 = "insert into emp_details values(?,?,?,?,?,?)";
+                mysql.query(qry2, [id,name,role,email,address,city], (err, results2)=>{
+                    if(results2.affectedRows > 0){
+                        res.render("add", {msg: true})
+
+                    }
+                });
+            }
+        }
+    })
 });
 
 
