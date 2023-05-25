@@ -39,9 +39,9 @@ app.get("/view",(req, res) => {
 
 
 
-app.get('/addstudent', (req, res) => {
+app.get('/addemployee', (req, res) => {
     //fetching data
-    const {id, name, email, role, address, city} = req.query;
+    const {id, name, email, role, address, city, contact} = req.query;
 
     //sanitization XSS...
     let qry = "select * from emp_details where emp_id=? or emp_email=?";
@@ -58,6 +58,32 @@ app.get('/addstudent', (req, res) => {
                 //insert query
                 let qry2 = "insert into emp_details values(?,?,?,?,?,?)";
                 mysql.query(qry2, [id,name,role,email,address,city], (err, results2)=>{
+                    
+                    if(results2.affectedRows > 0){
+                        res.render("add", {msg: true})
+
+                    }
+                });
+            }
+        }
+    })
+
+    //Relationship of both ids
+    let qrya = "select * from emp_details where emp_id=? or emp_email=?";
+    mysql.query(qry, [id, email], (err, results) => {
+        
+        if(err){
+            throw err
+        }
+        else{
+            if(results.length > 0){
+                res.render("add", {checkmsg: true})
+
+            } else {
+                //insert query
+                let qry2 = "insert into contact_details values(?,?)";
+                mysql.query(qry2, [id,contact], (err, results2)=>{
+                    
                     if(results2.affectedRows > 0){
                         res.render("add", {msg: true})
 
@@ -69,7 +95,7 @@ app.get('/addstudent', (req, res) => {
 });
 
 
-app.get("/searchstudent", (req,res)=> {
+app.get("/searchemployee", (req,res)=> {
     //fetch data from form
     const {id} = req.query;
 
@@ -106,7 +132,7 @@ app.get("/updatesearch", (req, res) => {
     });
 });
 
-app.get("/updatestudent", (req,res) => {
+app.get("/updateemployee", (req,res) => {
     const { id, name, address, city } = req.query;
     let qry = "update emp_details set emp_name=?, emp_addr=?, emp_city=? where emp_id=? ";
 
@@ -126,6 +152,26 @@ app.get("/updatestudent", (req,res) => {
     });
 
 });
+
+
+app.get("/deleteemployee", (req,res) => {
+
+    const {id} = req.query;
+
+    let qry = "delete from emp_details where emp_id=?";
+    mysql.query(qry, [id], (err, results) => {
+        if(err){
+            throw err;
+        } else{
+            if(results.affectedRows > 0){
+    
+                res.render("delete", {mesg1:true, mesg2: false, data: results});
+            }else{
+                res.render("delete", {mesg1:false, mesg2: true});
+            }
+        }
+    });
+})
 
 //Server
 app.listen(port,(err)=>{

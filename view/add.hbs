@@ -34,7 +34,7 @@
                 <div class="card-body">
                     <h2 class="title">Employee Info</h2>
 
-                    <form action="/addstudent">
+                    <form action="/addemployee">
 
                           <div class="input-group">
                             <input class="input--style-1" type="number" placeholder="id" name="id">
@@ -62,11 +62,15 @@
                               <div class="input-group">
                             <input class="input--style-1" type="text" placeholder="CITY" name="city">
                         </div>
-
+                        
+                              <div class="input-group">
+                            <input class="input--style-1" type="phone" placeholder="CONTACT" name="contact">
+                        </div>
                       
              
                         <div class="p-t-20">
                             <button class="btn btn--radius btn--green" type="submit">ADD EMPLOYEE</button>
+                            <a href="./">Go back to homepage.</a>
                         </div>
 
                         {{#if msg}}
