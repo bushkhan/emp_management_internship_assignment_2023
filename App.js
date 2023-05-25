@@ -88,6 +88,45 @@ app.get("/searchstudent", (req,res)=> {
     });
 });
 
+app.get("/updatesearch", (req, res) => {
+    const {id} = req.query;
+
+    let qry = "select * from emp_details where emp_id=?";
+    mysql.query(qry, [id], (err, results) => {
+        if(err){
+            throw err;
+        } else{
+            if(results.length > 0){
+    
+                res.render("update", {mesg1:true, mesg2: false, data: results});
+            }else{
+                res.render("update", {mesg1:false, mesg2: true});
+            }
+        }
+    });
+});
+
+app.get("/updatestudent", (req,res) => {
+    const { id, name, address, city } = req.query;
+    let qry = "update emp_details set emp_name=?, emp_addr=?, emp_city=? where emp_id=? ";
+
+    mysql.query(qry, [name, address, city, id], (err,results3) => {
+        if(err){
+            throw err;
+        } else{
+            console.log(results3.affectedRows);
+            if(results3.affectedRows > 0){
+                res.render("update", {newmsg: true})
+
+            }
+            else{
+                console.log("error")
+            }
+        }
+    });
+
+});
+
 //Server
 app.listen(port,(err)=>{
     if (err) 
